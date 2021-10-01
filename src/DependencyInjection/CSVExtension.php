@@ -33,7 +33,7 @@ class CSVExtension extends Extension
     {
         /** @var YamlFileLoader $loader */
         $loader = new YamlFileLoader(
-            $container, new FileLocator(__DIR__ . '/../Resources/config')
+            $container, new FileLocator(__DIR__ . '/../../config')
         );
 
         if (class_exists(Application::class)) {
