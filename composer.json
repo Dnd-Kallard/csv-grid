@@ -28,5 +28,5 @@
             "Dnd\\Bundle\\CSVBundle\\": "src/"
         }
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "dev"
 }
