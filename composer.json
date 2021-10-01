@@ -1,5 +1,5 @@
 {
-    "name": "dnd/csv-bundle",
+    "name": "dnd-kallard/csv-bundle",
     "type": "symfony-bundle",
     "description": "Symfony CSV Bundle",
     "keywords": [
