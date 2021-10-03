@@ -94,7 +94,9 @@ class CSVCommand extends Command
      */
     protected function configure()
     {
-        $this->setDescription(self::$defaultDescription)->addArgument('file', InputArgument::REQUIRED, 'CSV Filepath');
+        $this->setDescription(self::$defaultDescription)
+            ->addArgument('file', InputArgument::REQUIRED, 'CSV Filepath')
+            ->addOption('json', null, null, 'Output CSV data to JSON');
     }
 
     /**
@@ -119,6 +121,15 @@ class CSVCommand extends Command
         }
 
         $this->getCSVData($io, $file);
+
+        if ($input->getOption('json')) {
+            /** @var string $jsonData */
+            $jsonData = json_encode($this->csvData);
+
+            $output->writeln($jsonData);
+
+            return 0;
+        }
 
         /** @var Table $table */
         $table = new Table($output);
@@ -178,7 +189,7 @@ class CSVCommand extends Command
         $header = $this->header;
         $header = str_replace('is_enabled', 'status', $header);
         /**
-         * @var int $key
+         * @var int    $key
          * @var string $value
          */
         foreach ($header as $key => $value) {
@@ -212,6 +223,7 @@ class CSVCommand extends Command
      */
     protected function removeInArray(string $element): void
     {
+        /** @var int $pos */
         $pos = array_search($element, $this->header);
 
         unset($this->header[$pos]);
@@ -236,16 +248,25 @@ class CSVCommand extends Command
                 switch ($key) {
                     case 'title':
                         /** @var Slugify $slugger */
-                        $slugger = new Slugify();
+                        $slugger         = new Slugify();
                         $product['slug'] = $slugger->slugify($value);
+                        break;
+                    case 'description':
+                        /** @var string $description */
+                        $description = $product[$key];
+                        /** @var string[] $html */
+                        $html = ['<br/>', '\r'];
+
+                        $product[$key] = str_replace($html, PHP_EOL, $description);
                         break;
                     case 'is_enabled':
                         $product[$key] = ($value === '1') ? "Enabled" : "Disabled";
                         break;
                     case 'price':
-                        /** @var string $value */ $value = $value . ' ' . $product['currency'];
-                        $value                           = str_replace('.', ',', $value);
-                        $product[$key]                   = $value;
+                        /** @var string $value */
+                        $value         = $value . ' ' . $product['currency'];
+                        $value         = str_replace('.', ',', $value);
+                        $product[$key] = $value;
 
                         unset($product['currency']);
                         break;
